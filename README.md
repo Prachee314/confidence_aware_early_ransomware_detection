@@ -1,10 +1,4 @@
 # Confidence-Aware Early Ransomware Detection Using Behavioral Analysis
-
-## 👩‍🎓 B.Tech Major Project
-**Author:** Prachee Dewangan  
-**Institute:** IIIT Naya Raipur  
-**Domain:** Cybersecurity + Machine Learning + Explainable AI  
-
 ---
 
 ## 📌 Overview

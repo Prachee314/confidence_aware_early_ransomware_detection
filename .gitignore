@@ -1,0 +1,10 @@
+dataset/
+results/
+models/
+.ipynb_checkpoints/
+__pycache__/
+*.pt
+*.h5
+*.ckpt
+*.pkl
+venv/

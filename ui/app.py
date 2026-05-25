@@ -12,6 +12,18 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
+plt.style.use("seaborn-v0_8-whitegrid")
+plt.style.use("dark_background")
+plt.rcParams.update({
+    "axes.facecolor": "#0f172a",
+    "figure.facecolor": "#0f172a",
+    "axes.edgecolor": "#334155",
+    "axes.labelcolor": "#e5e7eb",
+    "xtick.color": "#cbd5f5",
+    "ytick.color": "#cbd5f5",
+    "grid.color": "#334155",
+    "text.color": "#e5e7eb",
+})
 
 st.markdown("""
 <style>
@@ -110,17 +122,39 @@ def humanize_feature(f):
     return f.replace("_", " ")
 
 def explain_execution(i, risk, label, shap_vals, feature_names):
+    
+    shap_i = shap_vals[i]
+
     # Top contributing features
-    top_idx = np.argsort(np.abs(shap_vals[i]))[::-1][:3]
-    top_feats = [humanize_feature(feature_names[j]) for j in top_idx]
+    top_idx = np.argsort(np.abs(shap_i))[::-1][:3]
+    top_feats = []
+    for j in top_idx:
+        f = humanize_feature(feature_names[j])
+        if f not in top_feats:
+            top_feats.append(f)
 
-    # HTML-formatted explanation (IMPORTANT)
-    return (
-        f"<b>Decision:</b> {label}<br>"
-        f"<b>Risk score:</b> {risk:.3f}<br>"
-        f"<b>Key behavioral indicators:</b> {', '.join(top_feats)}"
-    )
+    if label == "ALERT":
+        explanation = (
+            f"<b>Decision:</b> ALERT<br>"
+            f"<b>Risk score:</b> {risk:.3f}<br>"
+            f"The execution shows behavioral patterns consistent with ransomware activity.<br>"
+        )
 
+    elif label == "DEFER":
+        explanation = (
+            f"<b>Decision:</b> DEFER<br>"
+            f"<b>Risk score:</b> {risk:.3f}<br>"
+            f"The execution shows mixed behavioral signals and requires further monitoring.<br>"
+        )
+
+    else:  # BENIGN
+        explanation = (
+            f"<b>Decision:</b> BENIGN<br>"
+            f"<b>Risk score:</b> {risk:.3f}<br>"
+            f"The execution behavior appears consistent with normal system activity.<br>"
+        )
+
+    return explanation
 
 def decision_color(label):
     if label == "ALERT":
@@ -338,6 +372,14 @@ st.markdown(
 # --------------------------------------------------
 # SHAP visualization (Compact & UI-friendly)
 # --------------------------------------------------
+# --------------------------------------------------
+# Global Feature Attribution (Dark Compact Style)
+# --------------------------------------------------
+
+# --------------------------------------------------
+# Global Feature Attribution (Compact Dark Style)
+# --------------------------------------------------
+
 st.markdown(
     '<div class="section-title">Global Feature Attribution</div>',
     unsafe_allow_html=True
@@ -348,22 +390,57 @@ st.caption(
     "(aggregated across executions)."
 )
 
-plt.figure(figsize=(6, 3), dpi=120)
+# Dark theme styling
+plt.rcParams.update({
+    "axes.facecolor": "#0b1220",
+    "figure.facecolor": "#0b1220",
+    "axes.edgecolor": "#334155",
+    "axes.labelcolor": "#e2e8f0",
+    "xtick.color": "#e2e8f0",
+    "ytick.color": "#e2e8f0",
+    "text.color": "#e2e8f0",
+    "grid.color": "#334155"
+})
+
+fig = plt.figure(figsize=(6.8,3.2), dpi=120)
 
 shap.summary_plot(
     shap_values,
     X,
     feature_names=feature_names,
-    max_display=8,
+    max_display=6,
     show=False
 )
 
-plt.tight_layout()
-st.pyplot(plt.gcf(), use_container_width=True)
+ax = plt.gca()
+
+# Improve readability
+ax.tick_params(axis="x", labelsize=9)
+ax.tick_params(axis="y", labelsize=9)
+
+plt.title(
+    "Key Behavioral Signals Driving Detection",
+    fontsize=11,
+    weight="bold",
+    pad=10
+)
+
+plt.xlabel(
+    "Impact on Risk Score",
+    fontsize=10,
+    labelpad=8
+)
+
+plt.grid(axis="x", linestyle="--", alpha=0.25)
+
+# Prevent label cutoff
+plt.subplots_adjust(left=0.35, bottom=0.25)
+
+st.pyplot(fig, use_container_width=True)
 plt.close()
 
 # --------------------------------------------------
-# Per-Execution Feature Impact (UI-grade)
+# Execution-Level Risk Drivers (Compact Dark Chart)
 # --------------------------------------------------
 
 st.markdown(
@@ -371,65 +448,63 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Get SHAP values for selected execution
 local_shap = shap_values[selected_idx]
 abs_local = np.abs(local_shap)
 
-# Top-k features
 k = 5
 top_idx = np.argsort(abs_local)[-k:]
 
 feature_labels = [humanize_feature(feature_names[i]) for i in top_idx]
 impact_vals = abs_local[top_idx]
 
-# Sort for better visual ordering
 order = np.argsort(impact_vals)
 feature_labels = np.array(feature_labels)[order]
 impact_vals = impact_vals[order]
 
-plt.figure(figsize=(6, 2.6), dpi=120)
+fig, ax = plt.subplots(figsize=(6.5,2.6), dpi=120)
 
-bars = plt.barh(
+bars = ax.barh(
     feature_labels,
     impact_vals,
-    edgecolor="black",
-    linewidth=0.3
+    height=0.45
 )
 
-# Color by relative impact
-threshold = np.percentile(impact_vals, 60)
-for bar, val in zip(bars, impact_vals):
-    bar.set_color("#ef4444" if val >= threshold else "#60a5fa")
+# Professional color gradient
+colors = ["#60a5fa","#60a5fa","#f97316","#ef4444","#b91c1c"]
+for bar, color in zip(bars, colors[-len(bars):]):
+    bar.set_color(color)
 
-# Value labels at bar end
+# Value labels
 for bar in bars:
     width = bar.get_width()
-    plt.text(
-        width + 0.01 * max(impact_vals),
-        bar.get_y() + bar.get_height() / 2,
+    ax.text(
+        width + 0.01,
+        bar.get_y() + bar.get_height()/2,
         f"{width:.2f}",
         va="center",
         fontsize=9
     )
 
-plt.xlabel("Impact on Risk Score", fontsize=10)
-plt.title("Top Contributors for This Execution", fontsize=11, weight="bold")
-plt.suptitle("Local Explanation (SHAP-based)", fontsize=9, y=0.93)
-
-plt.grid(axis="x", linestyle="--", alpha=0.3)
-plt.tight_layout()
-
-st.pyplot(plt.gcf(), use_container_width=True)
-plt.close()
-
-
-
-# --------------------------------------------------
-# Footer
-# --------------------------------------------------
-st.markdown("---")
-st.markdown(
-    "**Note:** The system performs execution-level ransomware detection. "
-    "Explanations are deterministic and rule-based for reproducibility."
+ax.set_xlabel(
+    "Contribution to Risk Score",
+    fontsize=9
 )
 
+ax.set_title(
+    "Top Behavioral Contributors",
+    fontsize=11,
+    weight="bold",
+    pad=6
+)
+
+ax.grid(axis="x", linestyle="--", alpha=0.25)
+
+# Remove box edges for modern look
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.spines["left"].set_visible(False)
+
+plt.tight_layout()
+
+st.pyplot(fig, use_container_width=True)
+plt.close()

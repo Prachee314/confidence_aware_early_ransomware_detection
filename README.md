@@ -1,5 +1,6 @@
-# Confidence-Aware Early Ransomware Detection Using Behavioral Analysis
----
+# 🛡️ Confidence-Aware Early Ransomware Detection
+
+AI-powered early ransomware detection system using behavioral analysis, LightGBM, and SHAP explainability.---
 
 ## 📌 Overview
 This project proposes a **confidence-aware framework for early ransomware detection** using **execution-level behavioral analysis** of Windows Sysmon logs from the **SILRAD dataset**.  

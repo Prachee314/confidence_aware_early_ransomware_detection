@@ -11,7 +11,7 @@ Instead of making rigid binary decisions, the system outputs:
 - ⏳ DEFER → Suspicious but uncertain (needs more monitoring)  
 - ✅ BENIGN → Normal execution  
 
-This reduces false positives and improves trust in early-stage detection. :contentReference[oaicite:0]{index=0}
+This reduces false positives and improves trust in early-stage detection. 
 
 ---
 
@@ -21,7 +21,7 @@ Traditional ransomware detection methods:
 - Use binary classification → high false alarms
 - Ignore uncertainty in early behavior
 
-Early-stage detection is challenging because only **partial execution data** is available. :contentReference[oaicite:1]{index=1}
+Early-stage detection is challenging because only **partial execution data** is available. 
 
 ---
 
@@ -42,7 +42,7 @@ High | High | ALERT |
 High | Low | DEFER |
 Low | Any | BENIGN |
 
-This explicitly handles uncertainty. :contentReference[oaicite:2]{index=2}
+This explicitly handles uncertainty. 
 
 ---
 
@@ -56,7 +56,7 @@ This explicitly handles uncertainty. :contentReference[oaicite:2]{index=2}
   - Avg absolute difference  
 - LightGBM risk estimation
 - SHAP-based explainability
-- Confidence-aware triage system :contentReference[oaicite:3]{index=3}
+- Confidence-aware triage system 
 
 ---
 
@@ -66,7 +66,7 @@ This explicitly handles uncertainty. :contentReference[oaicite:2]{index=2}
 - Windows Sysmon logs  
 - Benign + multiple ransomware families  
 - Execution-level labels  
-- fastText event embeddings provided :contentReference[oaicite:4]{index=4}
+- fastText event embeddings provided 
 
 ---
 
@@ -80,7 +80,7 @@ LightGBM (Proposed) | 0.876 | 0.829 | 0.560 | 0.669 | 0.749 |
 XGBoost | 0.875 | 0.826 | 0.556 | 0.665 | 0.814 |
 Random Forest | 0.553 | 0.250 | 0.502 | 0.334 | 0.582 |
 
-LightGBM performs best under early-stage constraints. :contentReference[oaicite:5]{index=5}
+LightGBM performs best under early-stage constraints. 
 
 ---
 
@@ -92,7 +92,7 @@ BENIGN | 6168 |
 ALERT | 669 |
 DEFER | 426 |
 
-Only high-confidence cases are alerted, reducing false alarms. :contentReference[oaicite:6]{index=6}
+Only high-confidence cases are alerted, reducing false alarms. {index=6}
 
 ---
 
@@ -100,7 +100,7 @@ Only high-confidence cases are alerted, reducing false alarms. :contentReference
 - Early ransomware signals exist within first 50 events  
 - Explanation strength improves trust in alerts  
 - DEFER state prevents premature classification  
-- Suitable for practical endpoint security deployment :contentReference[oaicite:7]{index=7}
+- Suitable for practical endpoint security deployment 
 
 ---
 
